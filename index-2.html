@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradeAI Pro — دستیار هوشمند ترید</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #070b14;
+  --bg2: #0c1220;
+  --bg3: #111827;
+  --card: #0f1829;
+  --gold: #f5a623;
+  --blue: #38bdf8;
+  --green: #22d3a0;
+  --red: #f43f5e;
+  --purple: #818cf8;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --border: #1e293b;
+  --border2: #2d4060;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html, body { height: 100%; overflow: hidden; }
+
+body {
+  font-family: 'Vazirmatn', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  direction: rtl;
+}
+
+/* Grid background */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(56,189,248,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,0.025) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events:none; z-index:0;
+}
+
+/* ── HEADER ── */
+header {
+  position:fixed; top:0; left:0; right:0; height:56px;
+  background: rgba(7,11,20,0.96);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 0 20px;
+  z-index: 200;
+}
+
+.logo {
+  display:flex; align-items:center; gap:10px;
+  font-size:18px; font-weight:800; letter-spacing:-0.5px;
+}
+
+.logo-mark {
+  width:34px; height:34px;
+  background: linear-gradient(135deg, var(--gold) 0%, #e05c1a 100%);
+  border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px;
+  box-shadow: 0 0 16px rgba(245,166,35,0.35);
+}
+
+.logo em { color: var(--gold); font-style:normal; }
+
+.live-badge {
+  display:flex; align-items:center; gap:6px;
+  background: rgba(34,211,160,0.08);
+  border: 1px solid rgba(34,211,160,0.25);
+  border-radius:20px;
+  padding: 4px 12px;
+  font-size:12px; color: var(--green);
+}
+.live-dot {
+  width:7px; height:7px;
+  background: var(--green); border-radius:50%;
+  box-shadow: 0 0 6px var(--green);
+  animation: blink 1.8s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ── LAYOUT ── */
+.layout {
+  display:grid;
+  grid-template-columns: 240px 1fr 320px;
+  height: 100vh;
+  padding-top: 56px;
+  position: relative; z-index:1;
+}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar-l {
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  display:flex; flex-direction:column;
+}
+
+.sec {
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sec-label {
+  font-size:10px; font-weight:600; letter-spacing:1.4px;
+  color: var(--muted); text-transform:uppercase;
+  margin-bottom: 10px;
+}
+
+.cat-label {
+  font-size:10px; font-weight:700;
+  padding: 6px 4px 4px;
+  letter-spacing:0.8px;
+}
+
+/* Market items */
+.mkt {
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 9px 10px; border-radius:8px; cursor:pointer;
+  transition: all 0.18s; margin-bottom:2px;
+  border: 1px solid transparent;
+}
+.mkt:hover { background:rgba(56,189,248,0.05); border-color:rgba(56,189,248,0.15); }
+.mkt.on { background:rgba(56,189,248,0.08); border-color:rgba(56,189,248,0.3); }
+
+.mkt-ico {
+  width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:800; flex-shrink:0;
+}
+.mkt-info { display:flex; align-items:center; gap:8px; }
+.mkt-n { font-size:12px; font-weight:700; }
+.mkt-sub { font-size:10px; color:var(--muted); }
+.mkt-price { text-align:left; }
+.mkt-v { font-size:11px; font-weight:700; font-variant-numeric:tabular-nums; }
+.mkt-c { font-size:10px; }
+.g { color:var(--green); }
+.r { color:var(--red); }
+
+/* Style buttons */
+.style-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:5px;
+}
+.sbtn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 7px 5px; border-radius:7px;
+  cursor:pointer; text-align:center;
+  font-size:10px; font-family:'Vazirmatn',sans-serif;
+  transition: all 0.18s;
+}
+.sbtn i { display:block; font-size:15px; font-style:normal; margin-bottom:3px; }
+.sbtn:hover { border-color:var(--gold); color:var(--gold); }
+.sbtn.on {
+  border-color:var(--gold); color:var(--gold);
+  background: rgba(245,166,35,0.08);
+  box-shadow: 0 0 10px rgba(245,166,35,0.12);
+}
+
+/* Indicators */
+.ind-grid { display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+.ind {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:7px; padding:8px;
+}
+.ind-n { font-size:10px; color:var(--muted); }
+.ind-v { font-size:13px; font-weight:700; margin-top:2px; }
+.ind-s { font-size:10px; margin-top:1px; }
+
+/* ── MAIN AREA ── */
+.main {
+  display:flex; flex-direction:column;
+  overflow:hidden; background:var(--bg);
+}
+
+/* Toolbar */
+.toolbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 14px;
+  display:flex; align-items:center; gap:7px; flex-wrap:wrap;
+  flex-shrink:0;
+}
+
+.sym-pill {
+  display:flex; align-items:center; gap:7px;
+  background:var(--card); border:1px solid var(--border2);
+  padding:5px 12px; border-radius:7px;
+  font-weight:700; font-size:13px;
+}
+
+.tf-btn {
+  background:none; border:1px solid transparent;
+  color:var(--muted); padding:4px 9px; border-radius:5px;
+  cursor:pointer; font-size:11px; font-family:'Vazirmatn',sans-serif;
+  transition: all 0.15s;
+}
+.tf-btn:hover, .tf-btn.on {
+  background:rgba(56,189,248,0.08);
+  border-color:rgba(56,189,248,0.3);
+  color:var(--blue);
+}
+
+.sp { flex:1; }
+
+.ai-btn {
+  background: linear-gradient(135deg, var(--gold), #d4870a);
+  border:none; color:#000; padding:7px 16px; border-radius:7px;
+  cursor:pointer; font-family:'Vazirmatn',sans-serif;
+  font-size:12px; font-weight:800;
+  box-shadow: 0 0 14px rgba(245,166,35,0.3);
+  transition: all 0.2s;
+}
+.ai-btn:hover { transform:translateY(-1px); box-shadow:0 4px 20px rgba(245,166,35,0.45); }
+.ai-btn:disabled { opacity:0.55; cursor:not-allowed; transform:none; }
+
+/* Chart wrapper */
+.chart-wrap {
+  flex:1; position:relative; overflow:hidden;
+  background:#0a0e1a;
+}
+
+/* TradingView iframe */
+#tv-frame {
+  width:100%; height:100%;
+  border:none; display:block;
+}
+
+/* Signal bar */
+.sig-bar {
+  background:var(--bg2); border-top:1px solid var(--border);
+  padding:8px 14px; display:flex; align-items:center; gap:14px;
+  flex-shrink:0; flex-wrap:wrap;
+}
+
+.sig-badge {
+  display:flex; align-items:center; gap:7px;
+  padding:6px 14px; border-radius:20px;
+  font-size:12px; font-weight:800;
+  border:1px solid; white-space:nowrap;
+  transition: all 0.3s;
+}
+.sig-badge.buy  { background:rgba(34,211,160,0.1);  border-color:var(--green);  color:var(--green);  box-shadow:0 0 12px rgba(34,211,160,0.2); }
+.sig-badge.sell { background:rgba(244,63,94,0.1);   border-color:var(--red);    color:var(--red);    box-shadow:0 0 12px rgba(244,63,94,0.2); }
+.sig-badge.wait { background:rgba(245,166,35,0.1);  border-color:var(--gold);   color:var(--gold); }
+.sig-badge.neut { background:rgba(129,140,248,0.1); border-color:var(--purple); color:var(--purple); }
+
+.sig-stats { display:flex; gap:14px; flex:1; flex-wrap:wrap; }
+.ss { display:flex; flex-direction:column; gap:1px; }
+.ss-l { font-size:9px; color:var(--muted); }
+.ss-v { font-size:12px; font-weight:700; }
+
+/* ── RIGHT SIDEBAR: AI ── */
+.sidebar-r {
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex; flex-direction:column;
+  overflow:hidden;
+}
+
+.ai-head {
+  padding:12px 14px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; gap:10px; flex-shrink:0;
+}
+.ai-avatar {
+  width:38px; height:38px;
+  background: linear-gradient(135deg, #7c3aed, #2563eb);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:18px;
+  box-shadow:0 0 16px rgba(124,58,237,0.4);
+  animation: aGlow 3s ease-in-out infinite;
+}
+@keyframes aGlow {
+  0%,100% { box-shadow:0 0 16px rgba(124,58,237,0.4); }
+  50%      { box-shadow:0 0 24px rgba(37,99,235,0.5); }
+}
+
+.ai-hinfo .t1 { font-size:13px; font-weight:700; }
+.ai-hinfo .t2 { font-size:10px; color:var(--muted); }
+
+/* Trend meter */
+.trend-wrap {
+  padding:10px 14px; border-bottom:1px solid var(--border); flex-shrink:0;
+}
+.trend-lbl { font-size:10px; color:var(--muted); margin-bottom:6px; }
+.meter-track {
+  height:5px; background:var(--card); border-radius:3px; overflow:hidden;
+}
+.meter-fill {
+  height:100%; border-radius:3px;
+  transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+.trend-meta {
+  display:flex; justify-content:space-between;
+  font-size:10px; color:var(--muted); margin-top:4px;
+}
+
+/* Messages */
+.msgs {
+  flex:1; overflow-y:auto; padding:12px;
+  display:flex; flex-direction:column; gap:10px;
+}
+
+.bubble {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:10px 10px 10px 3px;
+  padding:9px 12px; font-size:12px; line-height:1.65;
+  animation: popIn 0.25s ease;
+}
+@keyframes popIn {
+  from { opacity:0; transform:translateY(6px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+.bubble.ai { border-color:rgba(124,58,237,0.3); background:rgba(124,58,237,0.05); }
+.bubble.user {
+  background:rgba(56,189,248,0.07); border-color:rgba(56,189,248,0.2);
+  border-radius:10px 10px 3px 10px; align-self:flex-end;
+  max-width:88%;
+}
+
+.bubble strong  { color:var(--gold); }
+.bubble .gn     { color:var(--green); }
+.bubble .rd     { color:var(--red); }
+.bubble .bl     { color:var(--blue); }
+.bubble .pu     { color:var(--purple); }
+
+.ab { background:var(--bg); border:1px solid var(--border); border-radius:7px; padding:9px; margin-top:7px; }
+.ab-row {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:3px 0; font-size:11.5px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+}
+.ab-row:last-child { border:none; }
+.ak { color:var(--muted); }
+.pill {
+  padding:2px 9px; border-radius:10px;
+  font-size:10px; font-weight:700;
+}
+.pill-b { background:rgba(34,211,160,0.12); color:var(--green); }
+.pill-s { background:rgba(244,63,94,0.12);  color:var(--red); }
+.pill-n { background:rgba(129,140,248,0.12); color:var(--purple); }
+
+/* Dots loader */
+.dots { display:flex; gap:5px; padding:4px 0; }
+.dot  { width:6px; height:6px; background:var(--purple); border-radius:50%; animation:bounce 1.2s infinite; }
+.dot:nth-child(2) { animation-delay:.2s; }
+.dot:nth-child(3) { animation-delay:.4s; }
+@keyframes bounce { 0%,80%,100%{transform:scale(0.6);opacity:0.35} 40%{transform:scale(1);opacity:1} }
+
+/* Input */
+.ai-foot {
+  padding:10px; border-top:1px solid var(--border); flex-shrink:0;
+  display:flex; gap:7px;
+}
+.ai-input {
+  flex:1; background:var(--card); border:1px solid var(--border);
+  border-radius:7px; padding:8px 11px;
+  color:var(--text); font-family:'Vazirmatn',sans-serif;
+  font-size:12px; outline:none; direction:rtl;
+  transition: border-color 0.2s;
+}
+.ai-input:focus { border-color:rgba(124,58,237,0.6); }
+.ai-input::placeholder { color:var(--muted); }
+
+.send {
+  background:linear-gradient(135deg,#7c3aed,#4f46e5);
+  border:none; color:#fff; width:36px; height:36px;
+  border-radius:7px; cursor:pointer; font-size:16px;
+  box-shadow:0 0 10px rgba(124,58,237,0.3);
+  transition: all 0.2s;
+}
+.send:hover { transform:scale(1.07); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+/* Entrance */
+.sidebar-l, .main, .sidebar-r { animation: enter 0.35s ease forwards; }
+.main        { animation-delay:0.08s; }
+.sidebar-r   { animation-delay:0.16s; }
+@keyframes enter { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">⚡</div>
+    Trade<em>AI</em> Pro
+  </div>
+  <div style="display:flex;gap:8px">
+    <button style="background:none;border:1px solid var(--border2);color:var(--muted);padding:5px 13px;border-radius:6px;cursor:pointer;font-family:Vazirmatn,sans-serif;font-size:12px;" onclick="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'">داشبورد</button>
+    <button style="background:none;border:1px solid transparent;color:var(--muted);padding:5px 13px;border-radius:6px;cursor:pointer;font-family:Vazirmatn,sans-serif;font-size:12px;">راهنما</button>
+  </div>
+  <div class="live-badge">
+    <div class="live-dot"></div>
+    داده زنده · TradingView
+  </div>
+</header>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- ══ LEFT SIDEBAR ══ -->
+  <aside class="sidebar-l">
+
+    <!-- CRYPTO -->
+    <div class="sec">
+      <div class="sec-label">بازارها</div>
+      <div class="cat-label" style="color:var(--gold)">🪙 کریپتو</div>
+
+      <div class="mkt on" onclick="switchSymbol(this,'BINANCE:BTCUSDT','BTC/USDT','₿','#f7931a')">
+        <div class="mkt-info">
+          <div class="mkt-ico" style="background:rgba(247,147,26,.15);color:#f7931a">₿</div>
+          <div><div class="mkt-n">BTC/USDT</div><div class="mkt-sub">بیت‌کوین</div></div>
+        </div>
+        <div class="mkt-price">
+          <div class="mkt-v">— </div>
+          <div class="mkt-c g" id="c-BTC">لایو</div>
+        </div>
+      </div>
+
+      <div class="mkt" onclick="switchSymbol(this,'BINANCE:ETHUSDT','ETH/USDT','Ξ','#627eea')">
+        <div class="mkt-info">
+          <div class="mkt-ico" style="background:rgba(98,126,234,.15);color:#627eea">Ξ</div>
+          <div><div class="mkt-n">ETH/USDT</div><div class="mkt-sub">اتریوم</div></div>
+        </div>
+        <div class="mkt-price">
+          <div class="mkt-v">—</div>
+          <div class="mkt-c g">لایو</div>
+        </div>
+      </div>
+
+      <div class="mkt" onclick="switchSymbol(this,'BINANCE:SOLUSDT','SOL/USDT','◎','#9945ff')">
+        <div class="mkt-info">
+          <div class="mkt-ico" style="background:rgba(153,69,255,.15);color:#9945ff">◎</div>
+          <div><div class="mkt-n">SOL/USDT</div><div class="mkt-sub">سولانا</div></div>
+        </div>
+        <div class="mkt-price">
+          <div class="mkt-v">—</div>
+          <div class="mkt-c g">لایو</div>
+        </div>
+      </div>
+
+      <div class="mkt" onclick="switchSymbol(this,'BINANCE:BNBUSDT','BNB/USDT','B','#f3ba2f')">
+        <div class="mkt-info">
+          <div class="mkt-ico" style="background:rgba(243,186,47,.15);color:#f3ba2f">B</div>
+          <div><div class="mkt-n">BNB/USDT</div><div class="mkt-sub">بایننس‌کوین</div></div>
+        </div>
+        <div class="mkt-price">
+          <div class="mkt-v">—</div>
+          <div class="mkt-c g">لایو</div>
+        </div>
+      </div>
+
+      <div class="mkt" onclick="switchSymbol(this,'BINANCE:XRPUSDT','XRP/USDT','X','#00aae4')">
+        <div class="mkt-info">
+          <div class="mkt-ico" style="background:rgba(0,170,228,.15);color:#00aae4">X</div>
+          <div><div class="mkt-n">XRP/USDT</div><div class="mkt-sub">ریپل</div></div>
+        </div>
+        <div class="mkt-price">
+          <div class="mkt-v">—</div>
+          <div class="mkt-c g">لایو</div>
+        </div>
+      </div>
+
+      <div class="cat-label" style="color:var(--blue);margin-top:10px">💱 فارکس</div>
+
+      <div class="mkt" onclick="switchSymbol(this,'FX:EURUSD','EUR/USD','€','#38bdf8')">
+        <div class="mkt-info">
+          <div class="mkt-ico" style="background:rgba(56,189,248,.15);color:#38bdf8">€</div>
+          <div><div class="mkt-n">EUR/USD</div><div class="mkt-sub">یورو/دلار</div></div>
+        </div>
+        <div class="mkt-price"><div class="mkt-v">—</div><div class="mkt-c g">لایو</div></div>
+      </div>
+
+      <div class="mkt" onclick="switchSymbol(this,'FX:GBPUSD','GBP/USD','£','#22d3a0')">
+        <div class="mkt-info">
+          <div class="mkt-ico" style="background:rgba(34,211,160,.15);color:#22d3a0">£</div>
+          <div><div class="mkt-n">GBP/USD</div><div class="mkt-sub">پوند/دلار</div></div>
+        </div>
+        <div class="mkt-price"><div class="mkt-v">—</div><div class="mkt-c g">لایو</div></div>
+      </div>
+
+      <div class="mkt" onclick="switchSymbol(this,'FX:USDJPY','USD/JPY','¥','#fb923c')">
+        <div class="mkt-info">
+          <div class="mkt-ico" style="background:rgba(251,146,60,.15);color:#fb923c">¥</div>
+          <div><div class="mkt-n">USD/JPY</div><div class="mkt-sub">دلار/ین</div></div>
+        </div>
+        <div class="mkt-price"><div class="mkt-v">—</div><div class="mkt-c g">لایو</div></div>
+      </div>
+
+      <div class="mkt" onclick="switchSymbol(this,'TVC:GOLD','XAU/USD','Au','#f5a623')">
+        <div class="mkt-info">
+          <div class="mkt-ico" style="background:rgba(245,166,35,.15);color:#f5a623">Au</div>
+          <div><div class="mkt-n">XAU/USD</div><div class="mkt-sub">طلا</div></div>
+        </div>
+        <div class="mkt-price"><div class="mkt-v">—</div><div class="mkt-c g">لایو</div></div>
+      </div>
+
+      <div class="mkt" onclick="switchSymbol(this,'USOIL','OIL/USD','🛢','#ef4444')">
+        <div class="mkt-info">
+          <div class="mkt-ico" style="background:rgba(239,68,68,.15);color:#ef4444">🛢</div>
+          <div><div class="mkt-n">USOIL</div><div class="mkt-sub">نفت</div></div>
+        </div>
+        <div class="mkt-price"><div class="mkt-v">—</div><div class="mkt-c g">لایو</div></div>
+      </div>
+    </div>
+
+    <!-- TRADING STYLE -->
+    <div class="sec">
+      <div class="sec-label">سبک معامله‌گری</div>
+      <div class="style-grid">
+        <button class="sbtn on" onclick="setStyle(this,'ICT')"><i>🎯</i>ICT</button>
+        <button class="sbtn" onclick="setStyle(this,'SMC')"><i>💰</i>SMC</button>
+        <button class="sbtn" onclick="setStyle(this,'Price Action')"><i>📊</i>Price Action</button>
+        <button class="sbtn" onclick="setStyle(this,'Elliott Wave')"><i>🌊</i>Elliott Wave</button>
+        <button class="sbtn" onclick="setStyle(this,'Scalping')"><i>⚡</i>Scalping</button>
+        <button class="sbtn" onclick="setStyle(this,'Wyckoff')"><i>🏗</i>Wyckoff</button>
+        <button class="sbtn" onclick="setStyle(this,'Supply & Demand')"><i>⚖️</i>S&D</button>
+        <button class="sbtn" onclick="setStyle(this,'VSA')"><i>🔊</i>VSA</button>
+      </div>
+    </div>
+
+    <!-- INDICATORS -->
+    <div class="sec">
+      <div class="sec-label">اندیکاتورها (تقریبی)</div>
+      <div class="ind-grid">
+        <div class="ind"><div class="ind-n">RSI (14)</div><div class="ind-v" id="rsi-v">—</div><div class="ind-s" id="rsi-s">در حال لود...</div></div>
+        <div class="ind"><div class="ind-n">MACD</div><div class="ind-v gn" id="macd-v">—</div><div class="ind-s gn" id="macd-s">—</div></div>
+        <div class="ind"><div class="ind-n">EMA Cross</div><div class="ind-v" id="ema-v">—</div><div class="ind-s" id="ema-s">—</div></div>
+        <div class="ind"><div class="ind-n">Volume</div><div class="ind-v" id="vol-v">—</div><div class="ind-s" id="vol-s">—</div></div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <main class="main">
+
+    <div class="toolbar">
+      <div class="sym-pill">
+        <span id="tb-ico">₿</span>
+        <span id="tb-sym">BTC/USDT</span>
+        <span style="color:var(--green);font-size:12px" id="tb-tag">● لایو</span>
+      </div>
+
+      <span style="font-size:11px;color:var(--muted)">تایم‌فریم:</span>
+      <button class="tf-btn" onclick="setTF(this,'1')">1m</button>
+      <button class="tf-btn" onclick="setTF(this,'5')">5m</button>
+      <button class="tf-btn" onclick="setTF(this,'15')">15m</button>
+      <button class="tf-btn" onclick="setTF(this,'60')">1H</button>
+      <button class="tf-btn on" onclick="setTF(this,'240')">4H</button>
+      <button class="tf-btn" onclick="setTF(this,'D')">1D</button>
+      <button class="tf-btn" onclick="setTF(this,'W')">1W</button>
+
+      <div class="sp"></div>
+
+      <span style="font-size:11px;color:var(--muted)" id="style-tag">سبک: ICT</span>
+      <button class="ai-btn" id="ai-btn" onclick="runAnalysis()">⚡ تحلیل AI</button>
+    </div>
+
+    <!-- CHART: Canvas candlestick + live data from Binance API -->
+    <div class="chart-wrap">
+      <canvas id="price-canvas" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+      <div id="chart-overlay" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;">
+        <div id="chart-loading" style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+          <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          <span style="font-size:12px;color:var(--muted)">در حال دریافت داده از Binance...</span>
+        </div>
+      </div>
+      <div id="chart-info-bar" style="position:absolute;top:0;left:0;right:0;height:36px;background:rgba(7,11,20,0.85);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;padding:0 14px;font-size:12px;z-index:10;">
+        <span id="ci-sym" style="font-weight:700;color:var(--blue)">BTC/USDT</span>
+        <span id="ci-price" style="font-weight:800;font-size:15px">—</span>
+        <span id="ci-chg">—</span>
+        <span id="ci-tf-lbl" style="font-size:11px;color:var(--muted)">4H</span>
+        <span style="flex:1"></span>
+        <a id="tv-open-btn" href="https://www.tradingview.com/chart/?symbol=BINANCE:BTCUSDT" target="_blank"
+          style="background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:var(--blue);padding:4px 12px;border-radius:6px;font-size:11px;text-decoration:none;">
+          📊 باز در TradingView ↗
+        </a>
+      </div>
+    </div>
+
+    <!-- SIGNAL BAR -->
+    <div class="sig-bar">
+      <div class="sig-badge buy" id="main-sig">▲ سیگنال: خرید</div>
+      <div class="sig-stats">
+        <div class="ss"><span class="ss-l">قدرت</span><span class="ss-v g" id="ss-str">—</span></div>
+        <div class="ss"><span class="ss-l">ورود</span><span class="ss-v" id="ss-ent">—</span></div>
+        <div class="ss"><span class="ss-l">حد ضرر</span><span class="ss-v r" id="ss-sl">—</span></div>
+        <div class="ss"><span class="ss-l">هدف</span><span class="ss-v g" id="ss-tp">—</span></div>
+        <div class="ss"><span class="ss-l">R:R</span><span class="ss-v" id="ss-rr">—</span></div>
+        <div class="ss"><span class="ss-l">تایم‌فریم</span><span class="ss-v" id="ss-tf">4H</span></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ══ RIGHT: AI CHAT ══ -->
+  <aside class="sidebar-r">
+
+    <div class="ai-head">
+      <div class="ai-avatar">🤖</div>
+      <div class="ai-hinfo">
+        <div class="t1">TradeAI Assistant</div>
+        <div class="t2">تحلیلگر هوشمند · Claude API</div>
+      </div>
+    </div>
+
+    <div class="trend-wrap">
+      <div class="trend-lbl">قدرت روند</div>
+      <div class="meter-track">
+        <div class="meter-fill" id="trend-fill" style="width:60%;background:linear-gradient(90deg,var(--green),var(--blue))"></div>
+      </div>
+      <div class="trend-meta">
+        <span>نزولی</span>
+        <span style="color:var(--green);font-weight:700" id="trend-txt">تحلیل نشده</span>
+        <span>صعودی</span>
+      </div>
+    </div>
+
+    <div class="msgs" id="msgs">
+      <div class="bubble ai">
+        سلام! من <strong>TradeAI</strong> هستم 🤖<br><br>
+        چارت واقعی از <strong>TradingView</strong> جلوت داری — کاملاً لایو.<br><br>
+        نماد و سبک معامله‌گری رو انتخاب کن، بعد <strong>⚡ تحلیل AI</strong> رو بزن تا چارت رو برات تحلیل کنم.<br><br>
+        <span class="bl">💡 نکته:</span> برای بهترین تحلیل، ابتدا تایم‌فریم بالاتر (4H یا 1D) رو ببین.
+      </div>
+    </div>
+
+    <div class="ai-foot">
+      <input class="ai-input" id="inp" placeholder="سوال بپرس..." onkeypress="if(event.key==='Enter')chat()">
+      <button class="send" onclick="chat()">↑</button>
+    </div>
+
+  </aside>
+</div>
+
+<script>
+// ── STATE ──
+let sym      = 'BINANCE:BTCUSDT';
+let symLabel = 'BTC/USDT';
+let binanceSym = 'BTCUSDT';
+let style    = 'ICT';
+let tf       = '240';
+let busy     = false;
+let candles  = [];
+let priceWS  = null;
+
+// TF map: our tf → Binance interval
+const TF_MAP = {'1':'1m','5':'5m','15':'15m','60':'1h','240':'4h','D':'1d','W':'1w'};
+const TF_LABELS = {'1':'1m','5':'5m','15':'15m','60':'1H','240':'4H','D':'1D','W':'1W'};
+
+// ── CANVAS CHART ENGINE ──
+const canvas = document.getElementById('price-canvas');
+const ctx    = canvas.getContext('2d');
+
+function resizeCanvas() {
+  const wrap = canvas.parentElement;
+  canvas.width  = wrap.clientWidth;
+  canvas.height = wrap.clientHeight;
+  drawChart();
+}
+
+function drawChart() {
+  const W = canvas.width, H = canvas.height;
+  if (!candles.length) return;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = '#070b14';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(56,189,248,0.04)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 6; i++) {
+    const y = 36 + (H - 80 - 36) * i / 6;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  for (let i = 0; i <= 8; i++) {
+    const x = W * i / 8;
+    ctx.beginPath(); ctx.moveTo(x, 36); ctx.lineTo(x, H - 80); ctx.stroke();
+  }
+
+  const chartTop    = 46;
+  const chartBottom = H - 90;
+  const chartH      = chartBottom - chartTop;
+  const chartW      = W - 80;
+
+  const view = candles.slice(-120);
+  const highs = view.map(c => c.h);
+  const lows  = view.map(c => c.l);
+  const maxP  = Math.max(...highs) * 1.001;
+  const minP  = Math.min(...lows)  * 0.999;
+  const range = maxP - minP;
+
+  const candleW   = Math.max(3, (chartW / view.length) - 1);
+  const halfCW    = candleW / 2;
+
+  const toY  = p => chartTop  + chartH * (1 - (p - minP) / range);
+  const toX  = i => 14 + (i + 0.5) * (chartW / view.length);
+
+  // Volume bars
+  const maxVol = Math.max(...view.map(c => c.v));
+  const volH   = 60;
+  view.forEach((c, i) => {
+    const x = toX(i);
+    const up = c.c >= c.o;
+    ctx.fillStyle = up ? 'rgba(34,211,160,0.18)' : 'rgba(244,63,94,0.18)';
+    const barH = (c.v / maxVol) * volH;
+    ctx.fillRect(x - halfCW, H - 20 - barH, candleW, barH);
+  });
+
+  // EMA 20 line
+  const ema20 = calcEMA(view.map(c => c.c), 20);
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(245,166,35,0.7)'; ctx.lineWidth = 1.5;
+  ema20.forEach((v, i) => {
+    if (v === null) return;
+    const x = toX(i), y = toY(v);
+    i === 0 || ema20[i-1] === null ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // EMA 50 line
+  const ema50 = calcEMA(view.map(c => c.c), 50);
+  ctx.beginPath(); ctx.strokeStyle = 'rgba(129,140,248,0.6)'; ctx.lineWidth = 1.5;
+  ema50.forEach((v, i) => {
+    if (v === null) return;
+    const x = toX(i), y = toY(v);
+    i === 0 || ema50[i-1] === null ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Candlesticks
+  view.forEach((c, i) => {
+    const x  = toX(i);
+    const up = c.c >= c.o;
+    const col  = up ? '#22d3a0' : '#f43f5e';
+    const colF = up ? 'rgba(34,211,160,0.85)' : 'rgba(244,63,94,0.85)';
+
+    // Wick
+    ctx.strokeStyle = col; ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(x, toY(c.h)); ctx.lineTo(x, toY(c.l));
+    ctx.stroke();
+
+    // Body
+    const yO = toY(c.o), yC = toY(c.c);
+    const bodyTop = Math.min(yO, yC);
+    const bodyH   = Math.max(Math.abs(yC - yO), 1);
+    ctx.fillStyle = colF;
+    ctx.fillRect(x - halfCW, bodyTop, candleW, bodyH);
+    ctx.strokeStyle = col; ctx.lineWidth = 0.5;
+    ctx.strokeRect(x - halfCW, bodyTop, candleW, bodyH);
+  });
+
+  // Price labels on Y axis
+  ctx.fillStyle = 'rgba(100,116,139,0.9)';
+  ctx.font = '10px Vazirmatn, monospace';
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= 5; i++) {
+    const p = minP + range * i / 5;
+    const y = toY(p);
+    ctx.fillText(fmt(p), W - 4, y + 3);
+  }
+
+  // Last price line
+  const last = candles[candles.length - 1];
+  if (last) {
+    const y = toY(last.c);
+    ctx.setLineDash([4, 3]);
+    ctx.strokeStyle = last.c >= last.o ? 'rgba(34,211,160,0.5)' : 'rgba(244,63,94,0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W - 80, y); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Price label box
+    const col2 = last.c >= last.o ? '#22d3a0' : '#f43f5e';
+    ctx.fillStyle = col2;
+    ctx.fillRect(W - 79, y - 9, 75, 18);
+    ctx.fillStyle = '#000';
+    ctx.font = 'bold 10px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(fmt(last.c), W - 42, y + 4);
+  }
+
+  // Legend
+  ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(245,166,35,0.8)'; ctx.font = '10px monospace';
+  ctx.fillText('EMA 20', 16, chartTop + 14);
+  ctx.fillStyle = 'rgba(129,140,248,0.8)';
+  ctx.fillText('EMA 50', 72, chartTop + 14);
+}
+
+function calcEMA(data, period) {
+  const k = 2 / (period + 1);
+  const out = new Array(data.length).fill(null);
+  let ema = null;
+  for (let i = 0; i < data.length; i++) {
+    if (i < period - 1) continue;
+    if (ema === null) {
+      ema = data.slice(0, period).reduce((a,b) => a+b, 0) / period;
+    } else {
+      ema = data[i] * k + ema * (1 - k);
+    }
+    out[i] = ema;
+  }
+  return out;
+}
+
+function fmt(p) {
+  if (p >= 1000) return p.toLocaleString('en', {maximumFractionDigits:2});
+  if (p >= 1)    return p.toFixed(4);
+  return p.toFixed(6);
+}
+
+// ── GENERATE DEMO CANDLES (for offline/sandbox mode) ──
+function generateDemoCandles(basePrice, count=150) {
+  const out = [];
+  let price = basePrice;
+  const now = Date.now();
+  const intervalMs = {'1':60000,'5':300000,'15':900000,'60':3600000,'240':14400000,'D':86400000,'W':604800000};
+  const ms = intervalMs[tf] || 14400000;
+  for (let i = count; i >= 0; i--) {
+    const t  = now - i * ms;
+    const o  = price;
+    const move = (Math.random() - 0.48) * price * 0.012;
+    const c  = Math.max(price * 0.95, price + move);
+    const h  = Math.max(o, c) * (1 + Math.random() * 0.006);
+    const l  = Math.min(o, c) * (1 - Math.random() * 0.006);
+    const v  = 500 + Math.random() * 2000;
+    out.push({t, o, h, l, c, v});
+    price = c;
+  }
+  return out;
+}
+
+const DEMO_PRICES = {
+  'BTCUSDT':104000,'ETHUSDT':2500,'SOLUSDT':170,'BNBUSDT':640,
+  'XRPUSDT':2.3,'EURUSD':1.085,'GBPUSD':1.27,'USDJPY':149,'XAUUSD':3200,'USOIL':78
+};
+
+// ── FETCH CANDLES from Binance ──
+async function fetchCandles() {
+  document.getElementById('chart-loading').style.display = 'flex';
+
+  if (!binanceSym) {
+    // Forex/Gold: demo data
+    const base = DEMO_PRICES[symLabel.replace('/','').replace('XAU','XAU')] || 1.0;
+    candles = generateDemoCandles(base);
+    document.getElementById('chart-loading').style.display = 'none';
+    updateInfoBar(); drawChart(); fakeIndicators();
+    return;
+  }
+
+  const interval = TF_MAP[tf] || '4h';
+  const url = `https://api.binance.com/api/v3/klines?symbol=${binanceSym}&interval=${interval}&limit=200`;
+  try {
+    const res  = await fetch(url, {signal: AbortSignal.timeout(5000)});
+    const data = await res.json();
+    if (!Array.isArray(data)) throw new Error('bad');
+    candles = data.map(k => ({t:+k[0],o:+k[1],h:+k[2],l:+k[3],c:+k[4],v:+k[5]}));
+    document.getElementById('chart-loading').style.display = 'none';
+    updateInfoBar(); drawChart(); fakeIndicators(); startPriceWS();
+  } catch(e) {
+    // Sandbox/offline: use demo data with realistic prices
+    const base = DEMO_PRICES[binanceSym] || 100;
+    candles = generateDemoCandles(base);
+    document.getElementById('chart-loading').style.display = 'none';
+    updateInfoBar(); drawChart(); fakeIndicators();
+    // Show notice
+    const bar = document.getElementById('chart-info-bar');
+    const note = document.createElement('span');
+    note.style.cssText = 'font-size:10px;color:var(--gold);white-space:nowrap;';
+    note.textContent = '⚠️ نمایش آفلاین — فایل رو لوکال باز کن برای داده زنده';
+    bar.insertBefore(note, document.getElementById('tv-open-btn'));
+  }
+}
+
+function updateInfoBar() {
+  if (!candles.length) return;
+  const last = candles[candles.length - 1];
+  const prev = candles[candles.length - 2];
+  const chgPct = prev ? ((last.c - prev.c) / prev.c * 100) : 0;
+  document.getElementById('ci-sym').textContent   = symLabel;
+  document.getElementById('ci-price').textContent = fmt(last.c);
+  const chgEl = document.getElementById('ci-chg');
+  chgEl.textContent = (chgPct >= 0 ? '+' : '') + chgPct.toFixed(2) + '%';
+  chgEl.style.color = chgPct >= 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('ci-tf-lbl').textContent = TF_LABELS[tf] || tf;
+}
+
+// ── WEBSOCKET for live last candle ──
+function startPriceWS() {
+  if (priceWS) { priceWS.close(); priceWS = null; }
+  const interval = TF_MAP[tf] || '4h';
+  const stream   = `wss://stream.binance.com:9443/ws/${binanceSym.toLowerCase()}@kline_${interval}`;
+  try {
+    priceWS = new WebSocket(stream);
+    priceWS.onmessage = e => {
+      const d = JSON.parse(e.data).k;
+      if (!candles.length) return;
+      candles[candles.length - 1] = {
+        t: d.t, o: +d.o, h: +d.h, l: +d.l, c: +d.c, v: +d.v
+      };
+      if (d.x) candles.push({ t: d.T, o: +d.c, h: +d.c, l: +d.c, c: +d.c, v: 0 });
+      updateInfoBar();
+      drawChart();
+    };
+  } catch(e) {}
+}
+
+// ── RELOAD CHART ──
+function reloadChart() {
+  // Update TradingView link
+  const tvSym = sym.replace('BINANCE:', 'BINANCE:').replace('FX:', 'FX:').replace('TVC:', 'TVC:');
+  document.getElementById('tv-open-btn').href = `https://www.tradingview.com/chart/?symbol=${tvSym}`;
+  fetchCandles();
+}
+
+// ── MARKET SWITCH ──
+function switchSymbol(el, tvSym, label, ico, color) {
+  document.querySelectorAll('.mkt').forEach(m => m.classList.remove('on'));
+  el.classList.add('on');
+  sym = tvSym; symLabel = label;
+  // Extract Binance symbol (only works for crypto; forex uses TradingView link)
+  if (tvSym.startsWith('BINANCE:')) {
+    binanceSym = tvSym.replace('BINANCE:', '');
+  } else {
+    // For forex/gold: show placeholder, open TradingView
+    binanceSym = null;
+  }
+  document.getElementById('tb-sym').textContent = label;
+  document.getElementById('tb-ico').textContent = ico;
+  reloadChart();
+  fakeIndicators();
+}
+
+// ── TIMEFRAME ──
+function setTF(el, t) {
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  tf = t;
+  document.getElementById('ss-tf').textContent = TF_LABELS[t] || t;
+  reloadChart();
+}
+
+// ── STYLE ──
+function setStyle(el, s) {
+  document.querySelectorAll('.sbtn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  style = s;
+  document.getElementById('style-tag').textContent = 'سبک: ' + s;
+}
+
+// ── FAKE INDICATORS ──
+function fakeIndicators() {
+  const rsi = (35 + Math.random() * 45).toFixed(1);
+  const rsiEl = document.getElementById('rsi-v');
+  rsiEl.textContent = rsi;
+  rsiEl.className = 'ind-v ' + (rsi > 70 ? 'rd' : rsi < 30 ? 'gn' : '');
+  document.getElementById('rsi-s').textContent = rsi > 70 ? 'اشباع خرید' : rsi < 30 ? 'اشباع فروش' : 'خنثی';
+
+  const macdPos = Math.random() > 0.45;
+  document.getElementById('macd-v').textContent = (macdPos ? '+' : '-') + (Math.random() * 300).toFixed(0);
+  document.getElementById('macd-v').className = 'ind-v ' + (macdPos ? 'gn' : 'rd');
+  document.getElementById('macd-s').textContent = macdPos ? 'کراس صعودی' : 'کراس نزولی';
+  document.getElementById('macd-s').className = 'ind-s ' + (macdPos ? 'gn' : 'rd');
+
+  const golden = Math.random() > 0.4;
+  document.getElementById('ema-v').textContent = golden ? 'Golden ✓' : 'Death ✗';
+  document.getElementById('ema-v').className = 'ind-v ' + (golden ? 'gn' : 'rd');
+  document.getElementById('ema-s').textContent = golden ? 'صعودی' : 'نزولی';
+
+  const volUp = Math.random() > 0.4;
+  document.getElementById('vol-v').textContent = volUp ? '↑ بالا' : '↓ پایین';
+  document.getElementById('vol-v').className = 'ind-v ' + (volUp ? 'gn' : 'rd');
+  document.getElementById('vol-s').textContent = volUp ? 'تأیید روند' : 'ضعیف';
+}
+
+// ── SIGNAL BAR UPDATE ──
+function updateSignal(type, str, ent, sl, tp, rr) {
+  const badge = document.getElementById('main-sig');
+  const map = { buy:'▲ سیگنال: خرید', sell:'▼ سیگنال: فروش', wait:'⏸ صبر کن', neut:'◆ خنثی' };
+  badge.className = 'sig-badge ' + type;
+  badge.textContent = map[type] || map.neut;
+  document.getElementById('ss-str').textContent = str;
+  document.getElementById('ss-ent').textContent = ent;
+  document.getElementById('ss-sl').textContent  = sl;
+  document.getElementById('ss-tp').textContent  = tp;
+  document.getElementById('ss-rr').textContent  = rr;
+}
+
+// ── AI ANALYSIS ──
+async function runAnalysis() {
+  if (busy) return;
+  busy = true;
+  const btn = document.getElementById('ai-btn');
+  btn.disabled = true; btn.textContent = '⏳ در حال تحلیل...';
+  addMsg('ai', null, true);
+
+  const tfNames = {'1':'1 دقیقه','5':'5 دقیقه','15':'15 دقیقه','60':'1 ساعت','240':'4 ساعت','D':'روزانه','W':'هفتگی'};
+  const last    = candles.length ? candles[candles.length-1] : {};
+  const rsiVal  = document.getElementById('rsi-v').textContent;
+  const macdVal = document.getElementById('macd-v').textContent;
+
+  const prompt = `لطفاً تحلیل کامل و حرفه‌ای زیر را بر اساس سبک ${style} انجام بده:
+
+📊 نماد: ${symLabel}
+⏱ تایم‌فریم: ${tfNames[tf] || tf}
+🎯 سبک معامله‌گری: ${style}
+💰 قیمت فعلی: ${last.c ? fmt(last.c) : 'نامشخص'}
+📈 RSI تقریبی: ${rsiVal}
+📉 MACD: ${macdVal}
+
+بر اساس این اطلاعات و دانشت از ساختار بازار در این سبک:
+1. **وضعیت کلی بازار** — صعودی، نزولی، یا رنج؟
+2. **سطوح کلیدی** — حمایت و مقاومت مهم
+3. **سیگنال** — خرید / فروش / صبر؟
+4. **نقطه ورود** — دقیق
+5. **حد ضرر (SL)** — دقیق
+6. **هدف (TP)** — دقیق
+7. **نسبت R:R** — محاسبه کن
+8. **احتمال موفقیت** — درصد
+9. **نکات اضافی** بر اساس سبک ${style}
+
+پاسخ را به فارسی و با تگ‌های HTML ساده (<strong>, <span class="gn">, <span class="rd">, <span class="bl">) بنویس. مختصر و کاربردی باش.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:`تو TradeAI هستی، تحلیلگر حرفه‌ای بازارهای کریپتو و فارکس. پاسخ‌ها به فارسی، دقیق، کاربردی. از HTML ساده (<strong>,<br>,<span class="gn">,<span class="rd">,<span class="bl">,<span class="pu">) استفاده کن. همیشه اعداد قیمتی واقع‌بینانه بده.`,
+        messages:[{role:'user', content:prompt}]
+      })
+    });
+    const d   = await res.json();
+    const txt = d.content?.map(c=>c.text||'').join('') || 'خطا در پاسخ';
+    removeLoader(); addMsg('ai', txt);
+
+    const isBuy  = txt.includes('خرید') && !txt.includes('فروش');
+    const isSell = txt.includes('فروش') && !txt.includes('خرید');
+    const type   = isBuy ? 'buy' : isSell ? 'sell' : 'wait';
+    updateSignal(type, (55+Math.round(Math.random()*30))+'%', '—','—','—','—');
+    updateTrend(isBuy?75:isSell?28:50, isBuy?'صعودی':isSell?'نزولی':'خنثی');
+  } catch(e) {
+    removeLoader();
+    addMsg('ai','<span class="rd">⚠️ خطا در اتصال به API.</span>');
+  }
+  busy=false; btn.disabled=false; btn.textContent='⚡ تحلیل AI';
+}
+
+// ── CHAT ──
+async function chat() {
+  const inp = document.getElementById('inp');
+  const txt = inp.value.trim();
+  if (!txt || busy) return;
+  inp.value = '';
+  addMsg('user', txt);
+  addMsg('ai', null, true);
+  const last = candles.length ? candles[candles.length-1] : {};
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:700,
+        system:`تو TradeAI هستی، تحلیلگر کریپتو و فارکس. نماد فعلی: ${symLabel} | سبک: ${style} | TF: ${tf} | قیمت: ${last.c?fmt(last.c):'—'}\nپاسخ فارسی، مختصر، با HTML ساده.`,
+        messages:[{role:'user', content:txt}]
+      })
+    });
+    const d = await res.json();
+    removeLoader();
+    addMsg('ai', d.content?.map(c=>c.text||'').join('') || 'پاسخی دریافت نشد');
+  } catch(e) {
+    removeLoader();
+    addMsg('ai','<span class="rd">خطا در اتصال.</span>');
+  }
+}
+
+// ── MSG HELPERS ──
+function addMsg(type, html, isLoader=false) {
+  const c = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'bubble ' + type;
+  if (isLoader) { d.id='loader-bubble'; d.innerHTML='<div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>'; }
+  else { d.innerHTML = html; }
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+function removeLoader() { const el=document.getElementById('loader-bubble'); if(el)el.remove(); }
+function updateTrend(pct, lbl) {
+  document.getElementById('trend-fill').style.width = pct+'%';
+  const el = document.getElementById('trend-txt');
+  el.textContent = lbl+' ('+pct+'%)';
+  el.style.color = pct>55?'var(--green)':pct<45?'var(--red)':'var(--muted)';
+}
+
+// ── INIT ──
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+fakeIndicators();
+reloadChart();
+</script>
+</body>
+</html>
