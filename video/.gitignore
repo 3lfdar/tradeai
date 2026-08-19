@@ -1,4 +1,5 @@
 node_modules/
 out/
+.auth/
 public/footage/*
 !public/footage/.gitkeep

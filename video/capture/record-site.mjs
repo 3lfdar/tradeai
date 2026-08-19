@@ -36,6 +36,30 @@ if (!url || url.includes('example.com')) {
 
 mkdirSync(outDir, {recursive: true});
 
+/**
+ * رمز عبور نباید در فایل کانفیگ باشد — آن فایل در گیت می‌رود.
+ * فقط ${ENV_VAR} مجاز است.
+ */
+const guardSecrets = (auth) => {
+  const offenders = (auth?.steps ?? [])
+    .filter((step) => step.action === 'type' && step.secret !== false)
+    .filter((step) => typeof step.text === 'string' && !/^\$\{\w+\}$/.test(step.text))
+    .map((step) => step.selector);
+
+  if (offenders.length) {
+    console.error(
+      'رمز/نام‌کاربری مستقیم در site.config.json نوشته شده — این فایل در گیت می‌رود.\n' +
+        `  المان‌ها: ${offenders.join(', ')}\n` +
+        '  به‌جایش بنویس:  "text": "${GRYFFIN_PASSWORD}"\n' +
+        '  و موقع اجرا:    GRYFFIN_PASSWORD=... node capture/record-site.mjs\n' +
+        '  اگر این مقدار واقعاً محرمانه نیست:  "secret": false'
+    );
+    process.exit(1);
+  }
+};
+
+if (config.auth) guardSecrets(config.auth);
+
 /** کرومیوم محلی را پیدا کن تا دانلود لازم نشود */
 const findChromium = () => {
   if (process.env.CHROMIUM_PATH) return process.env.CHROMIUM_PATH;
@@ -61,19 +85,20 @@ const findFfmpeg = () => {
   return undefined;
 };
 
-/** طول یک فایل ویدیویی بر حسب ثانیه */
-const probeDuration = (ffmpegPath, file) => {
-  // ffprobe همیشه کنار ffmpeg نیست؛ از خروجی خود ffmpeg می‌خوانیم
-  try {
-    execFileSync(ffmpegPath, ['-i', file], {stdio: ['ignore', 'ignore', 'pipe']});
-  } catch (err) {
-    const match = /Duration: (\d+):(\d+):([\d.]+)/.exec(err.stderr?.toString() ?? '');
-    if (match) {
-      const [, h, m, sec] = match;
-      return Number(h) * 3600 + Number(m) * 60 + Number(sec);
+/**
+ * ${ENV_VAR} را از محیط پر می‌کند.
+ * رمز عبور هرگز در فایل کانفیگ نوشته نمی‌شود — فقط نام متغیر.
+ */
+const resolveEnv = (value) => {
+  if (typeof value !== 'string') return value;
+  return value.replace(/\$\{(\w+)\}/g, (whole, name) => {
+    const found = process.env[name];
+    if (found === undefined) {
+      console.error(`متغیر محیطی ${name} ست نشده — لازم است برای: ${whole}`);
+      process.exit(1);
     }
-  }
-  return 0;
+    return found;
+  });
 };
 
 /** اجرای یک قدم از سناریوی شات */
@@ -96,8 +121,18 @@ const runStep = async (page, step) => {
     case 'type':
       await page.click(step.selector, {timeout: step.timeout ?? 8000});
       // تایپ آهسته تا در ویدیو طبیعی به نظر برسد
-      await page.type(step.selector, step.text, {delay: step.delay ?? 90});
+      await page.type(step.selector, resolveEnv(step.text), {delay: step.delay ?? 90});
       await page.waitForTimeout(step.settleMs ?? 1000);
+      break;
+
+    case 'press':
+      await page.keyboard.press(step.key ?? 'Enter');
+      await page.waitForTimeout(step.settleMs ?? 1500);
+      break;
+
+    case 'waitForSelector':
+      await page.waitForSelector(step.selector, {timeout: step.timeout ?? 20000});
+      await page.waitForTimeout(step.settleMs ?? 800);
       break;
 
     case 'scrollTo':
@@ -155,11 +190,69 @@ const runStep = async (page, step) => {
   }
 };
 
+/**
+ * ورود به سایت و ذخیره‌ی سشن.
+ * جدا از ضبط اجرا می‌شود تا صفحه‌ی لاگین در فوتیج تبلیغاتی نیفتد
+ * و رمز عبور هرگز روی ویدیو نرود.
+ */
+const doLogin = async (browser, auth, statePath) => {
+  console.log('▸ ورود به سایت…');
+  const context = await browser.newContext({viewport});
+  const page = await context.newPage();
+
+  await page.goto(auth.url ?? url, {waitUntil: 'domcontentloaded', timeout: 60000});
+  await page.waitForTimeout(auth.waitAfterLoad ?? 2000);
+
+  // خطا را قورت نمی‌دهیم — لاگین ناموفق یعنی کل ضبط بی‌فایده است —
+  // ولی با پیام قابل‌فهم و اسکرین‌شات بیرونش می‌دهیم.
+  const fail = async (what, detail) => {
+    const shot = join(outDir, 'login-failed.png');
+    await page.screenshot({path: shot}).catch(() => undefined);
+    throw new Error(`ورود ناموفق در ${what}: ${detail}\n  ببین چه شد: ${shot}`);
+  };
+
+  for (const step of auth.steps ?? []) {
+    try {
+      await runStep(page, step);
+    } catch (err) {
+      await fail(
+        `«${step.action}${step.selector ? ` روی ${step.selector}` : ''}»`,
+        err.message.split('\n')[0]
+      );
+    }
+  }
+
+  // تأیید اینکه واقعاً وارد شده‌ایم
+  if (auth.successSelector) {
+    try {
+      await page.waitForSelector(auth.successSelector, {timeout: auth.successTimeout ?? 20000});
+    } catch {
+      await fail('تأیید نهایی', `«${auth.successSelector}» بعد از ورود پیدا نشد`);
+    }
+  }
+
+  mkdirSync(dirname(statePath), {recursive: true});
+  await context.storageState({path: statePath});
+  await context.close();
+  console.log(`  ✓ سشن ذخیره شد: ${statePath}`);
+};
+
 const chromiumPath = findChromium();
 const browser = await chromium.launch({
   headless: !has('headed'),
   ...(chromiumPath ? {executablePath: chromiumPath} : {}),
 });
+
+// سشن ذخیره‌شده — اگر سایت لاگین می‌خواهد
+const statePath = resolve(root, config.auth?.storageStatePath ?? '.auth/state.json');
+if (config.auth) {
+  if (has('login') || !existsSync(statePath)) {
+    await doLogin(browser, config.auth, statePath);
+  } else {
+    console.log(`▸ سشن قبلی استفاده می‌شود (${statePath}). برای ورود دوباره: --login`);
+  }
+}
+const storageState = config.auth && existsSync(statePath) ? statePath : undefined;
 
 const shots = config.shots?.length
   ? config.shots
@@ -177,6 +270,7 @@ for (const shot of shots) {
     viewport,
     deviceScaleFactor: 1,
     recordVideo: {dir: rawDir, size: viewport},
+    ...(storageState ? {storageState} : {}),
   });
   const page = await context.newPage();
 
@@ -188,8 +282,10 @@ for (const shot of shots) {
   }
   await page.waitForTimeout(config.waitAfterLoad ?? 3000);
 
-  // از اینجا محتوای مفید شروع می‌شود؛ قبلش فقط لود شدن صفحه است
-  const contentStart = (Date.now() - contextStart) / 1000;
+  // ⚠ playwright ابتدای ضبط را می‌اندازد (تأخیر راه‌اندازی screencast).
+  // پس قبل از هر حرکتی صبر می‌کنیم تا چیزی که دور ریخته می‌شود
+  // زمان مرده باشد، نه محتوای شات.
+  await page.waitForTimeout(config.warmupMs ?? 2500);
 
   for (const step of shot.steps ?? []) {
     try {
@@ -214,17 +310,22 @@ for (const shot of shots) {
   if (ffmpeg) {
     const mp4Path = join(outDir, `${shot.name}.mp4`);
     // بخش لود شدن صفحه بریده می‌شود تا کلیپ از محتوای واقعی شروع کند.
-    // تایم‌لاین webm با ساعت دیواری یکی نیست، پس از انتهای فایل برش می‌زنیم:
-    // محتوای شات همیشه آخرین بخش ضبط است.
-    const webmDuration = probeDuration(ffmpeg, webmPath);
-    const contentLength = contentEnd - contentStart + (shot.leadInSeconds ?? 0.4);
-    const trim = Math.max(0, webmDuration - contentLength);
+    // ضبط playwright با ساعت دیواری پیش می‌رود، پس contentStart مستقیماً
+    // روی تایم‌لاین ویدیو معنی دارد.
+    // تایم‌استمپ‌های ضبط playwright قابل اتکا نیستند، پس برش خودکار
+    // انجام نمی‌دهیم — دقت الکی بدتر از نبودش است. کلیپ کامل ساخته می‌شود
+    // (شامل لود شدن صفحه) و اگر خواستی ابتدایش را ببری، بعد از دیدن کلیپ
+    // مقدار trimStartSeconds را در همان شات بگذار.
+    const trim = shot.trimStartSeconds ?? 0;
+
     execFileSync(ffmpeg, [
       '-y',
-      '-ss', trim.toFixed(2),
+      '-fflags', '+genpts',
       '-i', webmPath,
+      // -ss بعد از -i تا برش دقیق باشد (قبل از -i پرش کی‌فریمی است)
+      ...(trim > 0 ? ['-ss', String(trim)] : []),
       '-c:v', 'libx264', '-preset', 'medium', '-crf', '18',
-      '-pix_fmt', 'yuv420p', '-r', '30',
+      '-pix_fmt', 'yuv420p', '-r', '30', '-vsync', 'cfr',
       '-an',
       mp4Path,
     ], {stdio: 'ignore'});
