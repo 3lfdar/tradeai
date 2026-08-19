@@ -1,0 +1,21 @@
+{
+  "url": "https://gryffin.uk",
+  "viewport": {"width": 1600, "height": 900},
+  "waitAfterLoad": 3500,
+  "outDir": "public/footage/site",
+
+  "_comment": "هر شات یک کلیپ جدا می‌سازد. اگر shots خالی باشد، اسکریپت خودش یک تور خودکار می‌گیرد (اسکرول آرام تا انتهای صفحه).",
+
+  "shots": [
+    {
+      "name": "hero",
+      "description": "صفحه‌ی اول، بدون حرکت",
+      "steps": [{"action": "wait", "ms": 3000}]
+    },
+    {
+      "name": "scroll-tour",
+      "description": "اسکرول آرام از بالا تا پایین صفحه",
+      "steps": [{"action": "scrollTour", "durationMs": 9000}]
+    }
+  ]
+}

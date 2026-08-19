@@ -4,6 +4,7 @@ import {Background} from '../components/Background';
 import {Logo} from '../components/Logo';
 import {theme, font} from '../theme';
 import {pick, useFormat} from '../format';
+import {brand} from '../content';
 
 /** اینترو: لوگو + تیتر قلاب (hook) */
 export const Intro: React.FC<{headline: string; sub?: string}> = ({
@@ -34,7 +35,7 @@ export const Intro: React.FC<{headline: string; sub?: string}> = ({
           padding: pick(format, 90, 120),
         }}
       >
-        <Logo size={pick(format, 86, 74)} />
+        <Logo size={pick(format, 86, 74)} parts={brand.logo} mark={brand.logoMark} />
 
         <div
           style={{

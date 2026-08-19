@@ -3,10 +3,13 @@ import {interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {theme, font} from '../theme';
 
 /** لوگوی TradeAI Pro — همان چیدمان هدر اپ، با ورود انیمیشنی */
-export const Logo: React.FC<{size?: number; delay?: number}> = ({
-  size = 90,
-  delay = 0,
-}) => {
+export const Logo: React.FC<{
+  size?: number;
+  delay?: number;
+  /** بخش‌های نام برند: [عادی، رنگ آبی، رنگ طلایی] — از content.brand.logo می‌آید */
+  parts?: readonly [string, string, string];
+  mark?: string;
+}> = ({size = 90, delay = 0, parts = ['Trade', 'AI', ' Pro'], mark = '⚡'}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
 
@@ -47,12 +50,12 @@ export const Logo: React.FC<{size?: number; delay?: number}> = ({
           transform: `rotate(${markSpin}deg)`,
         }}
       >
-        ⚡
+        {mark}
       </div>
       <span>
-        Trade
-        <span style={{color: theme.blue, fontStyle: 'italic'}}>AI</span>
-        <span style={{color: theme.gold}}> Pro</span>
+        {parts[0]}
+        <span style={{color: theme.blue, fontStyle: 'italic'}}>{parts[1]}</span>
+        <span style={{color: theme.gold}}>{parts[2]}</span>
       </span>
     </div>
   );

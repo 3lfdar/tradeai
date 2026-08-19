@@ -1,6 +1,6 @@
 import React from 'react';
 import {Composition} from 'remotion';
-import {TradeAIVideo, TOTAL_SECONDS} from './Video';
+import {PromoVideo, TOTAL_SECONDS} from './Video';
 import {FORMATS} from './format';
 
 const FPS = 30;
@@ -15,7 +15,7 @@ export const RemotionRoot: React.FC = () => (
   <>
     <Composition
       id="Reels"
-      component={TradeAIVideo}
+      component={PromoVideo}
       durationInFrames={DURATION}
       fps={FPS}
       width={FORMATS.reels.width}
@@ -24,7 +24,7 @@ export const RemotionRoot: React.FC = () => (
     />
     <Composition
       id="YouTube"
-      component={TradeAIVideo}
+      component={PromoVideo}
       durationInFrames={DURATION}
       fps={FPS}
       width={FORMATS.youtube.width}

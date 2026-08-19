@@ -4,6 +4,7 @@ import {Background} from '../components/Background';
 import {Logo} from '../components/Logo';
 import {theme, font} from '../theme';
 import {pick, useFormat} from '../format';
+import {brand} from '../content';
 
 /** اوترو / کال‌تو‌اکشن */
 export const Outro: React.FC<{cta: string; handle: string}> = ({cta, handle}) => {
@@ -24,7 +25,7 @@ export const Outro: React.FC<{cta: string; handle: string}> = ({cta, handle}) =>
           gap: pick(format, 56, 44),
         }}
       >
-        <Logo size={pick(format, 78, 68)} />
+        <Logo size={pick(format, 78, 68)} parts={brand.logo} mark={brand.logoMark} />
 
         <div
           style={{

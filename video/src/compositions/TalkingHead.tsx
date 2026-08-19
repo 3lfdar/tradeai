@@ -6,6 +6,7 @@ import {LowerThird} from '../components/LowerThird';
 import {Subtitles, SubtitleCue} from '../components/Subtitles';
 import {Logo} from '../components/Logo';
 import {pick, useFormat} from '../format';
+import {brand} from '../content';
 
 /**
  * سکانس توک‌هد: خودت جلوی دوربین + زیرنویس فارسی + لوئر ثرد + واترمارک.
@@ -60,7 +61,7 @@ export const TalkingHead: React.FC<{
           opacity: 0.85,
         }}
       >
-        <Logo size={pick(format, 34, 30)} />
+        <Logo size={pick(format, 34, 30)} parts={brand.logo} mark={brand.logoMark} />
       </div>
 
       <Sequence durationInFrames={showLowerThirdUntil}>
