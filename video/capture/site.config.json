@@ -1,0 +1,22 @@
+{
+  "url": "https://gryffin.uk",
+  "viewport": {"width": 1600, "height": 900},
+  "waitAfterLoad": 3500,
+  "warmupMs": 2500,
+  "outDir": "public/footage/site",
+
+  "_auth": "سایت لاگین می‌خواهد؟ بلوک auth را از README کپی کن. رمز فقط ${ENV_VAR}.",
+
+  "_shots": "هر شات یک کلیپ جدا. اگر خالی بگذاری، یک تور خودکار می‌گیرد.",
+
+  "shots": [
+    {
+      "name": "hero",
+      "steps": [{"action": "wait", "ms": 3000}]
+    },
+    {
+      "name": "scroll-tour",
+      "steps": [{"action": "scrollTour", "durationMs": 9000}]
+    }
+  ]
+}
